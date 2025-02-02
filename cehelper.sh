@@ -19,7 +19,7 @@ done
 
 # Get the executable path of all running processes
 # 'grep' for AppId, include the first 20 characters after match
-# 'cut' the "AppId=" match fro the result, return only those that match the '=' delimiter
+# 'cut' the "AppId=" match from the result, return only those that match the '=' delimiter
 # 'grep' for 1-20 numbers, return only the first match
 APPID=`ps -ef | grep -oP "AppId.{0,20}" | cut -sf2- -d= | grep -Eom1 "[0-9]{0,20}"`
 
@@ -28,7 +28,7 @@ if [[ $REPLY -eq 1 || $REPLY -eq 2 ]]; then
     # Note, you must have CE extracted to your system
     # CE executable seems to be required within the game's prefix
     # I use a symbolic link within the prefix. Example:
-    # ln -s /home/user/.local/bin/CheatEngine/ [PATH TO PREFIX]/drive_c/CheatEngine
+    # ln -s [PATH TO PREFIX]/drive_c/CheatEngine /home/[USER]/.local/bin/CheatEngine/
 
     if [ $# = 0 ]; then
         # Use Automatic option, should be the current running prefix
