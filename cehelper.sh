@@ -23,15 +23,12 @@ fi
 # Get the executable path of all running processes
 # 'grep' for AppId, include the first 20 characters after match
 # 'cut' the "AppId=" match from the result, return only those that match the '=' delimiter
-# 'grep' for 1-20 numbers, return only the first match
-APPID=`ps -ef | grep -oP "AppId.{0,20}" | cut -sf2- -d= | awk '{print $1}'`
+# 'awk' returns the first "column" of output, trimmed of whitespace
+APPID=$(ps -ef | grep -oP "AppId.{0,20}" | cut -sf2- -d= | awk '{print $1}')
 
 if [ $REPLY -eq 1 ]; then
     # Runs Cheat Engine in the specified prefix.
-    # Note, you must have CE extracted to your system
-    # CE executable seems to be required within the game's prefix
-    # I use a symbolic link within the prefix. Example:
-    # ln -s /home/[USER]/.local/bin/CheatEngine/ [PATH TO PREFIX]/drive_c/CheatEngine
+    # Note, you must have CE installed on your system
 
     if [ $# = 0 ]; then
         # Use Automatic option, should be the current running prefix
@@ -45,7 +42,8 @@ if [ $REPLY -eq 1 ]; then
     COMPDATA="$STEAMPATH/steamapps/compatdata"
     # This script uses Proton Experimental, modify to suit your needs
     PRTEXEC="$STEAMPATH/steamapps/common/Proton - Experimental/proton"
-    CEPATH="$COMPDATA/$GAME/pfx/drive_c/CheatEngine/"
+    # Update to match the installed directory for Cheat Engine
+    CEPATH="$HOME/CheatEngine/"
 
     STEAM_COMPAT_DATA_PATH="$COMPDATA/$GAME/" STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" "$PRTEXEC" run "$CEPATH/cheatengine-x86_64.exe" </dev/null &>/dev/null &
 else
