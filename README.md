@@ -3,7 +3,7 @@
 
 ## A simple bash script that makes launching Cheat Engine easier for Steam Proton running in linux.
 
-This script quickly determines the prefix used by the currently running game, and automatically launches Cheat Engine for your current running game.
+This script quickly determines the prefix used by the currently running game, and automatically launches Cheat Engine in that game's prefix.
 
 - You will need to have Cheat Engine installed on your system.
 - You will need to configure the script with the directory you have Cheat Engine installed to.
