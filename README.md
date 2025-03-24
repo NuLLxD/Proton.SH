@@ -16,9 +16,9 @@ This shell script keeps it incredibly simple and requires very little user input
 2. Install Cheat Engine in your home directory (eg. ~/Cheat Engine 7.5)
 3. Open terminal and browse to your script directory.  
 4. Give the script execute permissions  
-`chmod +x proton.sh`  
+```chmod +x proton.sh```  
 5. Run the script  
-`./proton.sh`
+```./proton.sh```
 
 ![image](https://github.com/user-attachments/assets/d06ed6a3-f7d2-44d7-b683-3b4c20720e98)
 
@@ -28,4 +28,3 @@ For more feature fledged and configurable options look into:
 https://github.com/sonic2kk/steamtinkerlaunch  
 https://github.com/jcnils/protonhax  
 https://github.com/Matoking/protontricks  
-```
