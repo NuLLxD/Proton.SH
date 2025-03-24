@@ -1,21 +1,31 @@
-# cehelper
-# Steam Proton Cheat Engine Helper
+# Proton.SH
+## A shell script created to simplify launching arbitrary executables in active Steam proton environment  
 
-## A simple bash script that makes launching Cheat Engine easier for Steam Proton running in linux.
+## Features
+Automatically detect steam installation.  
+Automatically locate Cheat Engine in the users home directory.  
+Prompt for proton version.  
+Launch arbitrary executables with custom path.  
+If at any point the script fails to do these things it will request user input.  
 
-Run this script after you have launched your Steam Proton game. This script will quickly determine the prefix used by the currently running game, and automatically launch Cheat Engine in that game's prefix.
+## Why Proton.SH?
+This shell script keeps it incredibly simple and requires very little user input and virtually no configuration.  Lightweight, speed and ease of use.
 
-- You will need to have Cheat Engine installed on your system.
-- You will need to configure the script with the directory you have Cheat Engine installed to.
+## Usage
+1. Clone the repo or download the script.
+2. Install Cheat Engine in your home directory (eg. ~/Cheat Engine 7.5)
+3. Open terminal and browse to your script directory.  
+4. Give the script execute permissions  
+`chmod +x proton.sh`  
+5. Run the script  
+`./proton.sh`
 
-You can also provide an AppID to force Cheat Engine to run in a specific prefix, or choose to have the script return only the AppId.
-
-If you need more that what this script offers, both prontontrick and protonhax provide significantly more control and options, please check them out!
-
-https://github.com/Matoking/protontricks
-
-https://github.com/jcnils/protonhax
+![image](https://github.com/user-attachments/assets/d06ed6a3-f7d2-44d7-b683-3b4c20720e98)
 
 
-*Of course, use Cheat Engine at your own risk. It is possible to break, crash, or corrupt your game with Cheat Engine.
-Proceed with caution, and use at your own risk. I cannot accept any responsibility for any misuse of Cheat Engine.*
+## Alternatives
+For more feature fledged and configurable options look into:  
+https://github.com/sonic2kk/steamtinkerlaunch  
+https://github.com/jcnils/protonhax  
+https://github.com/Matoking/protontricks  
+```
