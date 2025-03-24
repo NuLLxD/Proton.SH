@@ -8,6 +8,7 @@ Automatically detect steam installation.
 Automatically locate Cheat Engine in the users home directory.  
 Prompt for proton version.  
 Launch arbitrary executables with custom path.  
+Launch a windows command shell.  
 If at any point the script fails to do these things it will request user input.  
 
 ## Why Proton.SH?
