@@ -1,5 +1,7 @@
 # Proton.SH
-## A shell script created to simplify launching arbitrary executables in active Steam proton environment  
+A shell script created to simplify launching arbitrary executables inside the active Steam proton environment  
+
+Bassed off work by [chrisdouglas](https://github.com/chrisgdouglas/cehelper)
 
 ## Features
 Automatically detect steam installation.  
