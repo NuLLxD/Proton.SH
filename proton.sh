@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Proton.SH by NuLLxD - Enhanced for a stylish interactive experience.
+# Proton.SH by NuLLxD - Now with colors~
+# Based off cehelper by chrisgdouglas
 
 clear
 
