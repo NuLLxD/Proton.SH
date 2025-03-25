@@ -129,7 +129,7 @@ while true; do
             return_or_exit
             ;;
         4)  # Open Windows Command Prompt
-            STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" "$PRTEXEC" run cmd.exe
+            nohup bash -c "STEAM_COMPAT_DATA_PATH=\"$COMPDATA/$APPID/\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"$STEAMPATH\" \"$PRTEXEC\" run cmd.exe" &>/dev/null &
             return_or_exit
             ;;
         5)  # Exit
