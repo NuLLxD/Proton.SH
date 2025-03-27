@@ -23,7 +23,7 @@ This shell script keeps it incredibly simple and requires very little user input
 5. Run the script  
 ```./proton.sh```
 
-![image](https://github.com/user-attachments/assets/370a3711-6ece-4201-82f8-cecbc58c4d6d)
+![image](https://github.com/user-attachments/assets/2c66bfe9-875c-4fb7-bdc1-e33d72678306)
 
 
 
