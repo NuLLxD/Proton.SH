@@ -9,7 +9,7 @@ Based off work by [chrisgdouglas](https://github.com/chrisgdouglas/cehelper)
 * Automatically detect proton version.  
 * Detect if multiple proton instances are running and allow switching between them.   
 * Launch arbitrary executables with custom path.  
-* Launch a windows command shell.  
+* Launch a windows command shell with the working directory being the same as the script.  
 * Support for custom proton.  
 * If at any point the script fails to do these things it will request user input. 
 
