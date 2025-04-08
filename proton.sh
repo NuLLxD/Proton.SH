@@ -59,51 +59,28 @@ COMPDATA="$STEAMPATH/steamapps/compatdata"
 while true; do
   PROTON_PIDS=($(pgrep -f 'proton'))
   if [ ${#PROTON_PIDS[@]} -gt 0 ]; then
-    break
+    declare -A APPIDS
+    DISPLAY_OPTIONS=()
+
+    for PID in "${PROTON_PIDS[@]}"; do
+      APPID=$(tr '\0' '\n' < /proc/$PID/environ | grep '^SteamAppId=' | cut -d= -f2)
+      if [ -n "$APPID" ] && [[ -z "${APPIDS[$APPID]}" ]]; then
+        APPIDS[$APPID]=$PID
+        GAME_NAME=$(get_game_name "$APPID")
+        DISPLAY_OPTIONS+=("$APPID - ${GAME_NAME:-Unknown Game}")
+      fi
+    done
+
+    if [ ${#APPIDS[@]} -gt 0 ]; then
+      break
+    fi
   fi
+
   clear
   display_header
   echo -e "${YELLOW}Waiting for Proton instance to be started...${RESET}"
   sleep 2
 done
-
-# Detect running Proton instances
-declare -A APPIDS
-DISPLAY_OPTIONS=()
-
-for PID in "${PROTON_PIDS[@]}"; do
-  APPID=$(tr '\0' '\n' < /proc/$PID/environ | grep '^SteamAppId=' | cut -d= -f2)
-  if [ -n "$APPID" ] && [[ -z "${APPIDS[$APPID]}" ]]; then
-    APPIDS[$APPID]=$PID
-    GAME_NAME=$(get_game_name "$APPID")
-    DISPLAY_OPTIONS+=("$APPID - ${GAME_NAME:-Unknown Game}")
-  fi
-done
-
-# Choose Proton
-if [ "${#APPIDS[@]}" -gt 1 ]; then
-  clear
-  display_header
-  echo -e "${CYAN}Multiple Proton instances detected. Select one:${RESET}"
-  for i in "${!DISPLAY_OPTIONS[@]}"; do
-    printf "${GREEN}[%d]${RESET} %s\n" $((i+1)) "${DISPLAY_OPTIONS[$i]}"
-  done
-  echo
-  while true; do
-    read -rp "→ " SELECTED_INDEX
-    if [[ "$SELECTED_INDEX" =~ ^[0-9]+$ ]] && [ "$SELECTED_INDEX" -ge 1 ] && [ "$SELECTED_INDEX" -le "${#DISPLAY_OPTIONS[@]}" ]; then
-      APPID=$(echo "${DISPLAY_OPTIONS[$((SELECTED_INDEX-1))]}" | cut -d' ' -f1)
-      break
-    else
-      echo -e "${RED}Invalid selection. Try again.${RESET}"
-    fi
-  done
-elif [ "${#APPIDS[@]}" -eq 1 ]; then
-  APPID="${!APPIDS[@]}"
-else
-  echo -e "${RED}No running Proton instances detected.${RESET}"
-  exit 1
-fi
 
 # Function to detect Proton version
 detect_proton() {
