@@ -13,19 +13,43 @@ CYAN='\e[36m'
 BOLD='\e[1m'
 RESET='\e[0m'
 
-# Header function
-display_header() {
+header() {
   echo -e "${BLUE}${BOLD}====================================="
   echo -e "             Proton.SH        "
   echo -e "=====================================${RESET}"
 }
 
-# Retrieve game name from Steam API
-get_game_name() {
+gamename() {
   local appid=$1
   local response
   response=$(curl -s "https://store.steampowered.com/api/appdetails?appids=${appid}")
   echo "$response" | grep -oP '"name":"\K[^"]+' | head -n1
+}
+
+# Autocomplete setup for executables
+execauto() {
+  local cur_word=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -f -- "$cur_word" | grep -iE '\.exe$') )
+}
+
+complete -F execauto execpath
+
+execpath() {
+  echo -e "${CYAN}Enter full path of the executable:${RESET}"
+  read -e -rp "→ " RAW_INPUT
+
+  EXEC_PATH=$(eval echo "$RAW_INPUT")
+
+  if [ -f "$EXEC_PATH" ]; then
+    STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" \
+    STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" \
+    "$PRTEXEC" run "$EXEC_PATH" &>/dev/null &
+    echo -e "${GREEN}Executable launched: $EXEC_PATH${RESET}"
+    sleep 2
+  else
+    echo -e "${RED}Error: File not found!${RESET}"
+    sleep 2
+  fi
 }
 
 # Detect Cheat Engine path
@@ -55,14 +79,14 @@ fi
 
 COMPDATA="$STEAMPATH/steamapps/compatdata"
 
-# Wait for Proton to start if no instance is detected
+# Wait for Proton
 while true; do
   PROTON_PIDS=($(pgrep -f 'proton'))
   if [ ${#PROTON_PIDS[@]} -gt 0 ]; then
     break
   fi
   clear
-  display_header
+  header
   echo -e "${YELLOW}Waiting for Proton instance to be started...${RESET}"
   sleep 2
 done
@@ -75,15 +99,14 @@ for PID in "${PROTON_PIDS[@]}"; do
   APPID=$(tr '\0' '\n' < /proc/$PID/environ | grep '^SteamAppId=' | cut -d= -f2)
   if [ -n "$APPID" ] && [[ -z "${APPIDS[$APPID]}" ]]; then
     APPIDS[$APPID]=$PID
-    GAME_NAME=$(get_game_name "$APPID")
+    GAME_NAME=$(gamename "$APPID")
     DISPLAY_OPTIONS+=("$APPID - ${GAME_NAME:-Unknown Game}")
   fi
 done
 
-# Choose Proton
 if [ "${#APPIDS[@]}" -gt 1 ]; then
   clear
-  display_header
+  header
   echo -e "${CYAN}Multiple Proton instances detected. Select one:${RESET}"
   for i in "${!DISPLAY_OPTIONS[@]}"; do
     printf "${GREEN}[%d]${RESET} %s\n" $((i+1)) "${DISPLAY_OPTIONS[$i]}"
@@ -104,8 +127,7 @@ else
   exit 1
 fi
 
-# Function to detect Proton version
-detect_proton() {
+protonpath() {
   PROTON_CONFIG_INFO="$COMPDATA/$APPID/config_info"
 
   if [ -f "$PROTON_CONFIG_INFO" ]; then
@@ -119,7 +141,6 @@ detect_proton() {
     fi
   fi
 
-  # Check for custom Proton versions
   CUSTOM_PROTON_PATH="$HOME/.steam/root/compatibilitytools.d"
   if [ -d "$CUSTOM_PROTON_PATH" ]; then
     CUSTOM_PROTONS=($(find "$CUSTOM_PROTON_PATH" -mindepth 1 -maxdepth 1 -type d ! -name "LegacyRuntime"))
@@ -141,8 +162,7 @@ detect_proton() {
   return 1
 }
 
-# Detect or manually select Proton version
-if ! detect_proton; then
+if ! protonpath; then
   echo -e "${CYAN}Select Proton version:${RESET}"
   echo -e "${GREEN}[1]${RESET} Proton 9.0.x"
   echo -e "${GREEN}[2]${RESET} Proton Experimental"
@@ -159,12 +179,11 @@ if ! detect_proton; then
   esac
 fi
 
-# Main Menu Loop
 while true; do
   clear
-  display_header
+  header
 
-  GAME_NAME=$(get_game_name "$APPID")
+  GAME_NAME=$(gamename "$APPID")
   echo -e "${CYAN}Current Proton Prefix: ${APPID} - ${GAME_NAME}${RESET}"
   echo -e "${BLUE}${BOLD}=====================================${RESET}" 
   echo -e "${GREEN}[1]${RESET} Launch Cheat Engine in Active Prefix"
@@ -177,21 +196,14 @@ while true; do
 
   case "$choice" in
   1)
-    STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" "$PRTEXEC" run "$CEPATH/cheatengine-x86_64.exe" &>/dev/null &
+    STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" \
+    STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" \
+    "$PRTEXEC" run "$CEPATH/cheatengine-x86_64.exe" &>/dev/null &
     echo -e "${GREEN}Cheat Engine launched successfully!${RESET}"
     sleep 2
     ;;
   2)
-    echo -e "${CYAN}Enter full path of the executable:${RESET}"
-    read -rp "→ " EXEC_PATH
-    if [ -f "$EXEC_PATH" ]; then
-      STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" "$PRTEXEC" run "$EXEC_PATH" &>/dev/null &
-      echo -e "${GREEN}Executable launched: $EXEC_PATH${RESET}"
-      sleep 2
-    else
-      echo -e "${RED}Error: File not found!${RESET}"
-      sleep 2
-    fi
+    execpath
     ;;
   3)
     nohup bash -c "STEAM_COMPAT_DATA_PATH=\"$COMPDATA/$APPID/\" STEAM_COMPAT_CLIENT_INSTALL_PATH=\"$STEAMPATH\" \"$PRTEXEC\" run cmd.exe" &>/dev/null &
@@ -217,4 +229,5 @@ while true; do
     ;;
   *) echo -e "${RED}Invalid choice. Try again.${RESET}" ;;
   esac
+
 done
