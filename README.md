@@ -24,6 +24,7 @@ This shell script keeps it incredibly simple and requires very little user input
 ```chmod +x proton.sh```  
 5. Run the script  
 ```./proton.sh```
+
 ![image](https://github.com/user-attachments/assets/f3f69941-a6c6-4d69-a036-f5fcdb8aa924)
 
 
