@@ -96,8 +96,8 @@ declare -A APPIDS
 DISPLAY_OPTIONS=()
 
 for PID in "${PROTON_PIDS[@]}"; do
-  APPID=$(tr '\0' '\n' < /proc/$PID/environ | grep '^SteamAppId=' | cut -d= -f2)
-  if [ -n "$APPID" ] && [[ -z "${APPIDS[$APPID]}" ]]; then
+  APPID=$(ps -ef | grep -oP "AppId.{0,20}" | cut -sf2- -d= | awk '{print $1}')
+    if [ -n "$APPID" ] && [[ -z "${APPIDS[$APPID]}" ]]; then
     APPIDS[$APPID]=$PID
     GAME_NAME=$(gamename "$APPID")
     DISPLAY_OPTIONS+=("$APPID - ${GAME_NAME:-Unknown Game}")
