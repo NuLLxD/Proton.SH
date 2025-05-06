@@ -54,15 +54,14 @@ execpath() {
 
 # Detect Cheat Engine path
 CEPATH=$(find "$HOME" -maxdepth 2 -type f -name "cheatengine-x86_64.exe" 2>/dev/null | head -n 1)
-if [ -z "$CEPATH" ]; then
-  echo -e "${CYAN}Enter the full path to Cheat Engine:${RESET}"
-  read -rp "→ " CEPATH
-  if [ ! -f "$CEPATH/cheatengine-x86_64.exe" ]; then
-    echo -e "${RED}Error: Cheat Engine executable not found!${RESET}"
-    exit 1
-  fi
-else
+if [ -n "$CEPATH" ]; then
   CEPATH=$(dirname "$CEPATH")
+  cefound=true
+else
+  cefound=false
+  echo -e "${YELLOW}Cheat Engine not found.${RESET}"
+  echo -e "${YELLOW}Press any key to continue to the main menu...${RESET}"
+  read -n 1 -s
 fi
 
 # Detect Steam installation path
@@ -196,6 +195,12 @@ while true; do
 
   case "$choice" in
   1)
+    if [ "$cefound" = false ]; then
+      echo -e "${RED}Cheat Engine is not available. Skipping.${RESET}"
+      sleep 2
+      continue
+    fi
+
     STEAM_COMPAT_DATA_PATH="$COMPDATA/$APPID/" \
     STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAMPATH" \
     "$PRTEXEC" run "$CEPATH/cheatengine-x86_64.exe" &>/dev/null &
