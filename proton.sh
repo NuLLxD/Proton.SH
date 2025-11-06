@@ -96,11 +96,21 @@ detectAppid() {
 }
 
 # Detect Proton version from config_info
-detectProtonVersion() {
-  local cfg="$compData/$appid/config_info"
-  if [[ -f "$cfg" ]]; then
-    sed -n '2,4p' "$cfg" | grep -m1 "compatibilitytools.d" | sed -n 's|.*compatibilitytools.d/\([^/]*\)/.*|\1|p'
-  fi
+detectProtonPath() {
+    local cfg="$compData/$appid/config_info"
+    if [[ ! -f "$cfg" ]]; then return 1; fi
+
+    # Get the path from the second line of the config file
+    local proton_font_path
+    proton_font_path=$(sed -n '2p' "$cfg")
+
+    # Check if the path format is as expected and extract the root directory
+    if [[ "$proton_font_path" == *"/files/share/fonts/"* ]]; then
+        # The actual Proton installation is three directories above the font path
+        dirname "$(dirname "$(dirname "$proton_font_path")")"
+    else
+        return 1
+    fi
 }
 
 # Prompt for Proton manually
@@ -119,15 +129,16 @@ if ! detectAppid; then
   exit 1
 fi
 
-# Try to get Proton version
-prtVer=$(detectProtonVersion)
+# Try to get Proton path automatically
+prtPath=$(detectProtonPath)
 
-# Fallback
-if [[ -z "$prtVer" || ! -d "$steamPath/compatibilitytools.d/$prtVer" ]]; then
+# Fallback to manual selection if auto-detection fails
+if [[ -z "$prtPath" || ! -d "$prtPath" ]]; then
+  echo -e "${YELLOW}Could not auto-detect Proton version. Please select one manually.${RESET}"
   prtVer=$(promptProton)
+  prtPath="$steamPath/compatibilitytools.d/$prtVer"
 fi
 
-prtPath="$steamPath/compatibilitytools.d/$prtVer"
 prtExec="$prtPath/proton"
 
 # Validate proton executable
@@ -160,7 +171,7 @@ while true; do
     fi
     STEAM_COMPAT_DATA_PATH="$compData/$appid/" \
     STEAM_COMPAT_CLIENT_INSTALL_PATH="$steamPath" \
-    "$prtExec" run "$cePath/cheatengine-x86_64.exe" &>/dev/null &
+    "$prtExec" run "$cePath/Cheat Engine.exe" &>/dev/null &
     echo -e "${GREEN}Cheat Engine launched.${RESET}"
     sleep 2
     ;;
